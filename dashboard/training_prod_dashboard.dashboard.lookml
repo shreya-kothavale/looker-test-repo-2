@@ -1,5 +1,5 @@
-- dashboard: looker_training_dashboard_prod
-  title: Looker Training Dashboard PROD
+- dashboard: training_prod_dashboard
+  title: Looker Training Dashboard
   layout: newspaper
   preferred_viewer: dashboards-next
   description: ''
@@ -201,9 +201,9 @@
     model: qai_de_looker_training_prod_q03617_shreya_kothavale
     explore: dialogflow_cleaned_logs
     type: looker_pie
-    fields: [dialogflow_cleaned_logs.count, dialogflow_cleaned_logs.sentiment_bucket]
-    fill_fields: [dialogflow_cleaned_logs.sentiment_bucket]
-    sorts: [dialogflow_cleaned_logs.sentiment_bucket]
+    fields: [dialogflow_cleaned_logs.count, dialogflow_cleaned_logs.sentiment_bucket_1]
+    fill_fields: [dialogflow_cleaned_logs.sentiment_bucket_1]
+    sorts: [dialogflow_cleaned_logs.sentiment_bucket_1]
     limit: 500
     query_timezone: America/Los_Angeles
     value_labels: legend

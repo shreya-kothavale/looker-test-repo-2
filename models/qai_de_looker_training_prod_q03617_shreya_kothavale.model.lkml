@@ -8,6 +8,7 @@ include: "/views/**/second_last_intent.view"
 include: "/views/**/conversation_length.view"
 include: "/views/**/deflection.view"
 include: "/views/**/intent_correlation.view"
+include: "/dashboard/training_prod_dashboard.dashboard.lookml"
 
 datagroup: qai_de_looker_training_q03617_shreya_kothavale_default_datagroup {
   # sql_trigger: SELECT MAX(id) FROM etl_log;;

@@ -129,6 +129,29 @@ view: dialogflow_cleaned_logs {
           WHEN magnitude <= 3 and sentiment_score between -1 and -0.25 THEN '4. Partially Negative'
           WHEN magnitude > 3 and sentiment_score between -1 and -0.25 THEN '5. Negative'
           ELSE "3. Neutral" END ;;
+
+  }
+
+  dimension: sentiment_bucket_1 {
+    case: {
+      when: {
+        sql: ${magnitude} > 3 and ${sentiment_score} between 0.25 and 1 ;;
+        label: "1. Positive"
+      }
+      when: {
+        sql: ${magnitude} <= 3 and ${sentiment_score} between 0.25 and 1 ;;
+        label: "2. Partially Positive"
+      }
+      when: {
+        sql: ${magnitude} <= 3 and ${sentiment_score} between -1 and -0.25 ;;
+        label: "4. Partially Negative"
+      }
+      when: {
+        sql: ${magnitude} > 3 and ${sentiment_score} between -1 and -0.25 ;;
+        label: "5. Negative"
+      }
+      else: "3. Neutral"
+    }
   }
 
   measure: count {

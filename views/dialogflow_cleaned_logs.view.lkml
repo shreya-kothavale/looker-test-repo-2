@@ -1,5 +1,5 @@
 view: dialogflow_cleaned_logs {
-  sql_table_name: `looker_training.dialogflow_cleaned_logs`
+  sql_table_name: `looker_training_prod.dialogflow_cleaned_logs`
     ;;
 
   dimension: action {

@@ -17,7 +17,7 @@ view: dialogflow_cleaned_logs {
       quarter,
       year
     ]
-    convert_tz: no
+    convert_tz: yes
     datatype: date
     sql: ${TABLE}.date ;;
   }
@@ -69,6 +69,7 @@ view: dialogflow_cleaned_logs {
 
   dimension: response_id {
     type: string
+    primary_key: yes
     sql: ${TABLE}.response_ID ;;
   }
 
@@ -82,8 +83,17 @@ view: dialogflow_cleaned_logs {
     sql: ${TABLE}.session_ID ;;
   }
 
-  dimension: time {
-    type: string
+  dimension_group: time {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
     sql: ${TABLE}.time ;;
   }
 
@@ -106,8 +116,81 @@ view: dialogflow_cleaned_logs {
     sql: ${TABLE}.week_number ;;
   }
 
+  # dimension: sentiment_bucket {
+  #   type: tier
+  #   tiers: [-1,-0.6,-0.2,0.2,0.6,1]
+  #   sql: ${sentiment_score} ;;
+  # }
+
+  dimension: sentiment_bucket {
+    type: string
+    sql: CASE WHEN magnitude > 3 and sentiment_score between 0.25 and 1 THEN '1. Positive'
+          WHEN magnitude <= 3 and sentiment_score between 0.25 and 1 THEN '2. Partially Positive'
+          WHEN magnitude <= 3 and sentiment_score between -1 and -0.25 THEN '4. Partially Negative'
+          WHEN magnitude > 3 and sentiment_score between -1 and -0.25 THEN '5. Negative'
+          ELSE "3. Neutral" END ;;
+
+  }
+
+  dimension: sentiment_bucket_1 {
+    case: {
+      when: {
+        sql: ${magnitude} > 3 and ${sentiment_score} between 0.25 and 1 ;;
+        label: "1. Positive"
+      }
+      when: {
+        sql: ${magnitude} <= 3 and ${sentiment_score} between 0.25 and 1 ;;
+        label: "2. Partially Positive"
+      }
+      when: {
+        sql: ${magnitude} <= 3 and ${sentiment_score} between -1 and -0.25 ;;
+        label: "4. Partially Negative"
+      }
+      when: {
+        sql: ${magnitude} > 3 and ${sentiment_score} between -1 and -0.25 ;;
+        label: "5. Negative"
+      }
+      else: "3. Neutral"
+    }
+  }
+
   measure: count {
     type: count
     drill_fields: []
+  }
+
+  measure: total_sessions {
+    type: count_distinct
+    sql: ${session_id} ;;
+  }
+
+  measure: average_queries_per_session {
+    type: number
+    sql: if(${total_sessions} > 0,count(${query_text})/${total_sessions}, 0) ;;
+  }
+
+  measure: date_count {
+    type: count_distinct
+    sql: ${time_stamp_date} ;;
+  }
+
+  measure: average_session_per_day {
+    type: number
+    sql: if(${date_count} > 0, ${total_sessions}/${date_count}, 0) ;;
+  }
+
+  measure: average_sentiment_score {
+    type: average
+    sql: ${sentiment_score};;
+  }
+
+  measure: average_intent_detection_confidence {
+    type: average
+    sql: ${intent_detection_confidence};;
+  }
+
+  measure: success_rate {
+    type: number
+    sql: if(${count} > 0, sum(if(${is_fallback},0,1))/${count}, 0) ;;
   }
 }

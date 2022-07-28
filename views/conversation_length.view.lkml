@@ -12,6 +12,11 @@ view: conversation_length {
       ;;
   }
 
+  ## added diamension
+  dimension: count_of_msg_v2 {
+    type: number
+  }
+
   dimension: session_id {
     type: string
     primary_key: yes
